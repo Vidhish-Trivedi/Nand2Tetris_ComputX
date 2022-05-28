@@ -40,4 +40,47 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+    Mux16(a = instruction, b = ALUout, sel = instruction[15], out = Ain);
+    Not(in = instruction[15], out = notinstruction);
+    
+    // C-type : 1 11 c6c5c4c3c2c1 d3d2d1 j3j2j1
+
+    // A - register.
+    // when opcode (instruction[15]) == 0.
+    Or(a = notinstruction, b = instruction[5], out = loadA); // dest.1.
+    ARegister(in = Ain, load = loadA, out = Aout, out[0..14] = addressM);
+    Mux16(a=Aout,b=inM,sel=instruction[12],out=AMout);
+
+    // ALU.
+    And(a = instruction[11], b = instruction[15], out = zx);  // comp.1.
+    And(a = instruction[10], b = instruction[15], out = nx);  // comp.2.
+    Or(a = instruction[9], b = notinstruction, out = zy);  // comp.3.
+    Or(a = instruction[8], b = notinstruction, out = ny);  // comp.4.
+    And(a = instruction[7], b = instruction[15], out = f);  // comp.5.
+    And(a = instruction[6], b = instruction[15], out = no);  // comp.6.
+
+    ALU(x = Dout, y = AMout, zx = zx, nx = nx, zy = zy, ny = ny, f = f, no = no, out = outM, out = ALUout, zr = zero, ng = neg);
+
+    // write to register M.
+    And(a = instruction[15], b = instruction[3], out = writeM);  // dest.3.
+
+    // D - register. load?
+    And(a = instruction[15], b = instruction[4], out = loadD);  // dest.2.
+    DRegister(in = ALUout, load = loadD, out = Dout);
+
+    // for instructions involving jump.
+    Or(a = zero, b = neg, out = notpos);  // check positive.
+    Not(in = notpos, out = pos);
+
+    // determine jump instruction type (JGT, JMP, etc).
+    And(a = instruction[0], b = pos, out = j3);  // jump.3.
+    And(a = instruction[1], b = zero, out = j2);  // jump.3.
+    And(a = instruction[2], b = neg, out = j1);  // jump.3.
+
+    Or(a = j1, b = j2, out = j12);  // for jump.
+    Or(a = j12, b = j3, out = j123);  // for jump.
+    And(a = j123, b = instruction[15], out = jump);  // jump or not ?
+
+    // incase of jump, jump is high.
+    PC(in = Aout, load = jump, reset = reset, inc = true, out[0..14] = pc);  // new pc value.
 }
