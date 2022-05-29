@@ -1,0 +1,11 @@
+// test file.
+@45
+
+M = D
+
+
+
+
+// hello world.
+@23    // hello.
+D = A
