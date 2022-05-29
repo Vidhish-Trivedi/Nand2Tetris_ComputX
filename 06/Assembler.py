@@ -25,7 +25,7 @@ for line in assembly:
 # count number of instructions.
 ins_count = 0
 for _ in list_ins_labels:
-    print(_)
+    print(_)############################
     if(_[0] != "("):
         ins_count += 1
 
@@ -53,11 +53,68 @@ for line in list_ins_labels:
 
 # print()
 # print(i)
-# print(symbol_table)
+print("---------------")
+print(symbol_table)
+print("---------------")
 
-########################################################
+
 # BINARY CONVERSION LOGIC.
-########################################################
+# Convert to 15-bit binary.
+def make_binary_15(n):
+    n = int(n)
+    b = "{0:b}".format(n)
+    if len(b) < 15:
+        b = "0"*(15 - len(b)) + b
+    return(b)
+
+# Convert a binary string to decimal.
+def make_decimal(n):
+    n = int(n, 2)
+    return(str(n))
+
+# create a list for storing instructions converted to binary format.
+list_ins_binary = []
+
+j = 0  # to keep track of variable number (for handling variables)
+for line in list_ins_labels:
+    machine_code = ""
+    # handling labels, always used with A-type.
+    if("(" in line or ")" in line):
+        machine_code += "0"
+        line1 = str(line)
+        indx = line1.index(")")
+        label1 = (line1[:indx])[1:]  # extracting label name.
+        # print(label1)
+        machine_code += make_binary_15(symbol_table[label1])
+        
+    
+    # A-type instruction, continued.
+    elif(str(line[0]) == "@"):
+        machine_code += "0"
+        list_a = str(line).split()  # split at spaces, this will let us handle in-line comments.
+        # when non-negative decimal constant is used.
+        if(list_a[0][1:].isdigit()):
+            machine_code += make_binary_15(list_a[0][1:])
+
+        # for handling variables.
+        else:
+            variable1 = list_a[0][1:]
+            if(variable1 in symbol_table):
+                pass
+            else:
+                symbol_table[variable1] = j + 16  # add address of variable (in decimal) to the symbol_table. 
+                j += 1
+            machine_code += make_binary_15(symbol_table[variable1])
+        
+    list_ins_binary.append(machine_code)
+    
+
+# print("---------------")
+# print(symbol_table)
+# print("---------------")
+# print(list_ins_binary)
+# print("---------------")
+
 
 # # open file in write mode.
 # machineLang = open("./machine.txt", "w")

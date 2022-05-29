@@ -7,9 +7,22 @@ M=D
 @LABEL1
 M=D
 
+@var1
+D=A
+
+@LABEL2
+D=A+1
+
 // hello world.
 @23    // hello.
 D=A
+
+(LABEL2)
+@12
+D=M
+
+@var2
+M=A
 
 (END)
 @END
