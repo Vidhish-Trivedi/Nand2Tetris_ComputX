@@ -1,16 +1,10 @@
-// test file.
 @45
-
 M=D
-
 (LABEL1)
 @LABEL1
 M=D
-
-// hello world.
 @23    // hello.
 D=A
-
 (END)
 @END
 0;JMP
