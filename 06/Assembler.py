@@ -31,17 +31,33 @@ for _ in list_ins_labels:
 
 label_count = len(list_ins_labels) - ins_count
 
+# print()
 # print(ins_count)
 # print(label_count)
 
+# symbol table implemented using a symbol table.
+symbol_table = {}
+
+# First Pass, to add labels,
+# (this would not add variables, which do not have a corresponding (XYZ) line for an @XYZ line).
+i = 0
+for line in list_ins_labels:
+    if(line[0] == "("):
+        label1 = ""
+        for _ in line:
+            if(_ != "(" and _ != ")"):
+                label1 = label1 + _
+        symbol_table[label1] = i
+    else:
+        i += 1
+
+# print()
+# print(i)
+# print(symbol_table)
+
 ########################################################
-
-
 # BINARY CONVERSION LOGIC.
-
-
 ########################################################
-
 
 # # open file in write mode.
 # machineLang = open("./machine.txt", "w")
