@@ -8,6 +8,11 @@ import fileinput
 # list of instructions and labels (if any) present in the assembly file.
 list_ins_labels = []
 
+# According to language specifications.
+dict_comp = {"0": "0101010", "1": "0111111", "-1": "0111010", "D": "0001100", "A": "0110000", "!D": "0001101", "!A": "0110001", "-D": "0001111", "-A": "0110011", "D+1": "0011111", "A+1": "0110111", "D-1": "0001110", "A-1": "0110010", "D+A": "0000010", "D-A": "0010011", "A-D": "0000111", "D&A": "0000000", "D|A": "0010101", "M": "1110000", "!M": "1110001", "-M": "1110011", "M+1": "1110111", "M-1": "1110010", "D+M": "1000010", "D-M": "1010011", "M-D": "1000111", "D&M": "1000000", "D|M": "1010101"}
+dict_dest = {"null": "000", "M": "001", "D": "010", "MD": "011", "A": "100", "AM": "101", "AD": "110", "AMD": "111"}
+dict_jump = {"null": "000", "JGT": "001", "JEQ": "010", "JGE": "011", "JLT": "100", "JNE": "101", "JLE": "110", "JMP": "111"}
+
 # instructions in assembly file should be written without spaces,
 # That is: D=A+D is accepted, D = A + D is not accepted.
 # There should be an empty line at the end of the assembly file.
@@ -105,6 +110,53 @@ for line in list_ins_labels:
                 symbol_table[variable1] = j + 16  # add address of variable (in decimal) to the symbol_table. 
                 j += 1
             machine_code += make_binary_15(symbol_table[variable1])
+
+    # C-type instruction.
+    # at any time, atleast one of ";" or "=" would be present.
+    else:
+        machine_code += "111"
+        # if not a jump.
+        if(";" not in str(line)):
+            jump_final = "null"
+            list_d = str(line).split("=")
+            dest = list_d[0]
+            comp = list_d[1]
+            # handle in-line comments.
+            comp_final = ""
+            k = 0
+            while(k < len(comp) and comp[k] != " "):
+                comp_final += comp[k]
+                k += 1
+            
+        elif("=" not in str(line)):
+            dest = "null"
+            list_d = str(line).split(";")
+            comp_final = list_d[0]
+            jump = list_d[1]
+            # handle in-line comments.
+            jump_final = ""
+            k = 0
+            while(k < len(jump) and jump[k] != " "):
+                jump_final += jump[k]
+                k += 1
+
+
+        # print("-----------------------------")
+        # print(dest, comp_final, jump_final)
+        # print("-----------------------------")
+        
+        # generate comp bits.
+        comp_bits = dict_comp[comp_final]
+
+        # generate dest bits.
+        dest_bits = dict_dest[dest]
+
+        # generate jump bits.
+        jump_bits = dict_jump[jump_final]
+
+        machine_code += comp_bits
+        machine_code += dest_bits
+        machine_code += jump_bits
         
     list_ins_binary.append(machine_code)
     
