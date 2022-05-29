@@ -16,7 +16,7 @@ dict_jump = {"null": "000", "JGT": "001", "JEQ": "010", "JGE": "011", "JLT": "10
 # instructions in assembly file should be written without spaces,
 # That is: D=A+D is accepted, D = A + D is not accepted.
 # There should be an empty line at the end of the assembly file.
-assembly = fileinput.input("./assembly.txt")
+assembly = fileinput.input("./a.txt")
 
 for line in assembly:
     # remove blank lines (white spaces).
@@ -41,7 +41,7 @@ label_count = len(list_ins_labels) - ins_count
 # print(label_count)
 
 # symbol table implemented using a symbol table.
-symbol_table = {}
+symbol_table = {"R0": 0, "R1": 1, "R2": 2, "R3": 3, "R4": 4, "R5": 5, "R6": 6, "R7": 7, "R8": 8, "R9": 9, "R10": 10, "R11": 11, "R12": 12, "R13": 13, "R14": 14, "R15": 15, "SCREEN": 16384, "KBD": 24576}
 
 # First Pass, to add labels,
 # (this would not add variables, which do not have a corresponding (XYZ) line for an @XYZ line).
@@ -83,14 +83,15 @@ list_ins_binary = []
 j = 0  # to keep track of variable number (for handling variables)
 for line in list_ins_labels:
     machine_code = ""
+    machine_code1 = ""
     # handling labels, always used with A-type.
     if("(" in line or ")" in line):
-        machine_code += "0"
+        machine_code1 += "0"
         line1 = str(line)
         indx = line1.index(")")
         label1 = (line1[:indx])[1:]  # extracting label name.
         # print(label1)
-        machine_code += make_binary_15(symbol_table[label1])
+        machine_code1 += make_binary_15(symbol_table[label1])
         
     
     # A-type instruction, continued.
@@ -117,8 +118,10 @@ for line in list_ins_labels:
         machine_code += "111"
         # if not a jump.
         if(";" not in str(line)):
+            # print("AAA")
             jump_final = "null"
             list_d = str(line).split("=")
+            # print(list_d)
             dest = list_d[0]
             comp = list_d[1]
             # handle in-line comments.
@@ -129,6 +132,7 @@ for line in list_ins_labels:
                 k += 1
             
         elif("=" not in str(line)):
+            # print("BBB")
             dest = "null"
             list_d = str(line).split(";")
             comp_final = list_d[0]
@@ -158,7 +162,8 @@ for line in list_ins_labels:
         machine_code += dest_bits
         machine_code += jump_bits
         
-    list_ins_binary.append(machine_code)
+    if(machine_code != ""):
+        list_ins_binary.append(machine_code)
     
 
 # print("---------------")
@@ -168,10 +173,11 @@ for line in list_ins_labels:
 # print("---------------")
 
 
-# # open file in write mode.
-# machineLang = open("./machine.txt", "w")
-# # write to output file.
-# for line in list_ins_labels:
-#     machineLang.write(line)
-#     machineLang.write("\n")
-# machineLang.close()
+# open file in write mode.
+machineLang = open("./b.txt", "w")
+# write to output file.
+for line in list_ins_binary:
+    # print(line)
+    machineLang.write(line)
+    machineLang.write("\n")
+machineLang.close()
