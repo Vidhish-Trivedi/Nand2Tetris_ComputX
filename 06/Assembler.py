@@ -16,7 +16,16 @@ dict_jump = {"null": "000", "JGT": "001", "JEQ": "010", "JGE": "011", "JLT": "10
 # instructions in assembly file should be written without spaces,
 # That is: D=A+D is accepted, D = A + D is not accepted.
 # There should be an empty line at the end of the assembly file.
-assembly = fileinput.input("./a.txt")
+
+
+
+with open('./a.txt', 'r') as f:
+    txt = f.read().replace(' ', '')
+
+with open('./g.txt', 'w') as f:
+    f.write(txt)
+
+assembly = fileinput.input("./g.txt")
 
 for line in assembly:
     # remove blank lines (white spaces).
@@ -30,7 +39,7 @@ for line in assembly:
 # count number of instructions.
 ins_count = 0
 for _ in list_ins_labels:
-    print(_)############################
+    # print(_)
     if(_[0] != "("):
         ins_count += 1
 
@@ -85,7 +94,7 @@ for line in list_ins_labels:
     machine_code = ""
     machine_code1 = ""
     # handling labels, always used with A-type.
-    if("(" in line or ")" in line):
+    if(str(line)[0] == "("):
         machine_code1 += "0"
         line1 = str(line)
         indx = line1.index(")")
@@ -127,7 +136,7 @@ for line in list_ins_labels:
             # handle in-line comments.
             comp_final = ""
             k = 0
-            while(k < len(comp) and comp[k] != " "):
+            while(k < len(comp) and (comp[k] != " " and comp[k] != "/")):
                 comp_final += comp[k]
                 k += 1
             
@@ -140,7 +149,7 @@ for line in list_ins_labels:
             # handle in-line comments.
             jump_final = ""
             k = 0
-            while(k < len(jump) and jump[k] != " "):
+            while(k < len(jump) and (jump[k] != " " and jump[k] != "/")):
                 jump_final += jump[k]
                 k += 1
 
