@@ -64,11 +64,6 @@ def make_binary_15(n):
         b = "0"*(15 - len(b)) + b
     return(b)
 
-# Convert a binary string to decimal.
-def make_decimal(n):
-    n = int(n, 2)
-    return(str(n))
-
 # create a list for storing instructions converted to binary format.
 list_ins_binary = []
 
